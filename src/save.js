@@ -4,7 +4,7 @@
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { useBlockProps } from '@wordpress/block-editor';
+import { useBlockProps, InnerBlocks, useInnerBlocksProps } from '@wordpress/block-editor';
 
 /**
  * The save function defines the way in which the different attributes should
@@ -15,10 +15,26 @@ import { useBlockProps } from '@wordpress/block-editor';
  *
  * @return {Element} Element to render.
  */
-export default function save() {
-	return (
-		<p { ...useBlockProps.save() }>
-			{ 'TS Columns – hello from the saved content!' }
-		</p>
-	);
+export default function save({ attributes }) {
+  const { columns, stack, reverseStack } = attributes;
+  const blockProps = useBlockProps.save();
+  const {children, ...innerBlocksProps} = useInnerBlocksProps.save( blockProps );
+
+  return (
+    <section {...innerBlocksProps}>
+      <div className={`flex flex-wrap lg:flex-row ${ stack ? 'flex-col' : 'flex-row'}`}>
+        {children}
+      </div>
+    </section>
+  )
+  
 }
+
+/*
+return (
+      <div {...blockProps} className={`grid gap-4 ${stack ? `grid-columns-1 lg:grid-cols-${columns}` : `grid-cols-${columns}`}`}>
+          <InnerBlocks.Content />
+      </div>
+      
+  );
+  */

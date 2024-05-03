@@ -14,12 +14,20 @@
   "attributes": {
     "stack": {
       "type": "boolean",
-      
+      "default": true
+    },
+    "reverseStack" : {
+      "type": "boolean",
+      "default": false      
+    },
+    "columns": {
+      "type": "number",
+      "default": 1
     }
   },
 	"textdomain": "ts-columns",
 	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
+	"editorStyle": "file:../build/index.css",
+  "style": ["file:../build/index.css"],
 	"viewScript": "file:./view.js"
 }

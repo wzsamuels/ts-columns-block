@@ -11,15 +11,8 @@ import { __ } from '@wordpress/i18n';
  *
  * @see https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/#useblockprops
  */
-import { useBlockProps } from '@wordpress/block-editor';
-
-/**
- * Lets webpack process CSS, SASS or SCSS files referenced in JavaScript files.
- * Those files can contain any CSS code that gets applied to the editor.
- *
- * @see https://www.npmjs.com/package/@wordpress/scripts#using-css
- */
-import './editor.scss';
+import { useBlockProps, useInnerBlocksProps, InspectorControls, InnerBlocks } from '@wordpress/block-editor';
+import { ToggleControl, RangeControl, PanelBody } from '@wordpress/components';
 
 /**
  * The edit function describes the structure of your block in the context of the
@@ -30,31 +23,58 @@ import './editor.scss';
  * @return {Element} Element to render.
  */
 export default function Edit({ attributes, setAttributes }) {
-  const { images, columns, aspectRatio } = attributes;
-  
+
+  const { columns, stack, reverseStack } = attributes;
+  const blockProps = useBlockProps({className: 'flex flex-wrap w-full'});
+  const {children, ...innerBlocksProps} = useInnerBlocksProps( blockProps,
+    { allowedBlocks: ['core/column'],
+      template: [
+        ['core/column', {}, [
+            ['core/paragraph', { placeholder: 'Enter text...' }]
+        ]],
+        ['core/column', {}, [
+            ['core/paragraph', { placeholder: 'Enter text...' }]
+        ]]
+    ]});
 	return (
-		<div { ...useBlockProps() }>
+		<>
 			<InspectorControls>
-                <PanelBody title="Gallery Settings" initialOpen={true}>
-                    <RangeControl
-                        label="Columns"
-                        value={columns}
-                        onChange={(newColumns) => setAttributes({ columns: newColumns })}
-                        min={1}
-                        max={5}
-                    />
-                    <SelectControl
-                        label="Aspect Ratio"
-                        value={aspectRatio}
-                        options={[
-                            { label: '16:9', value: '16:9' },
-                            { label: '4:3', value: '4:3' },
-                            { label: 'Square', value: '1:1' }
-                        ]}
-                        onChange={(newAspectRatio) => setAttributes({ aspectRatio: newAspectRatio })}
-                    />
-                </PanelBody>
-            </InspectorControls>
-		</div>
+        <PanelBody title="Gallery Settings" initialOpen={true}>
+          <RangeControl
+              label="Columns"
+              value={columns}
+              onChange={(newColumns) => setAttributes({ columns: newColumns })}
+              min={1}
+              max={5}
+          />
+          <ToggleControl
+            label="Stack on mobile"
+            help={
+                stack
+                    ? 'Stack on mobile.'
+                    : 'Do not stack on mobile.'
+            }
+            checked={ stack }
+            onChange={ (newValue) => {
+                setAttributes({stack: newValue});
+            } }
+          />
+          { stack &&
+            <ToggleControl
+              label="Reverse stack direction on mobile"
+              checked={reverseStack}
+              onChange={ (newValue) => {
+                setAttributes({reverseStack: newValue});
+            } }
+              />          
+          } 
+        </PanelBody>
+      </InspectorControls>
+      <div {...innerBlocksProps}>
+        <div className='flex flex-wrap'>
+          {children}
+        </div>
+      </div>
+        </>
 	);
 }

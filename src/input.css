@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.is-single-column-mobile .wp-block-column {
+  flex-basis: 100% !important;
+  max-width: 100% !important;
+}
+
+@media (min-width: 600px) {
+  .is-single-column-mobile .wp-block-column {
+      flex-basis: calc(100% / var(--wp--preset--columns--number)) !important;
+      max-width: calc(100% / var(--wp--preset--columns--number)) !important;
+  }
+}
+
+.is-reverse-columns-mobile {
+  flex-direction: column-reverse;
+}
